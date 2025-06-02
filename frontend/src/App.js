@@ -102,12 +102,15 @@ function PrecioFilter() {
 */
 
 function App() {
-  const isLoggedIn = false; // Aquí podrías poner la lógica real de autenticación
+  const [isLoggedIn, setIsLogedIn] = useState(false); 
+  const handleLogin = () => {
+    setIsLogedIn(true);
+  };
 
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={isLoggedIn ? <Navigate to="/" replace /> : <Login onLogin={handleLogin} />} />
         <Route 
           path="/" 
           element={isLoggedIn ? <Home /> : <Navigate to="/login" replace />} 
@@ -117,24 +120,26 @@ function App() {
   );
 }
 
-function Login() {
+function Login({ onLogin }) {
   
   return (
     <div className="login">
       <div className="login-container">
         <p className='InicioTxt'>Iniciar Sesión</p>
         <p>¿No tienes una cuenta? <a href="/register" style={{color: "black"}}>Regístrate aquí</a></p>
-        <div className='login-btn-container'>
-          <p className='input-label'>Usuario<span style={{color:"red"}}>*</span></p>
-          <input type="text" placeholder="Usuario" required className='FormLogin'/>
+        <form style={{display: "flex", flexDirection: "column"}}>
+          <div className='login-btn-container'>
+            <p className='input-label'>Usuario<span style={{color:"red"}}>*</span></p>
+            <input type="text" placeholder="Usuario" required className='FormLogin'/>
+          </div>
+          <div className='login-btn-container'>
+            <p className='input-label'>Contraseña<span style={{color:"red"}}>*</span></p>
+            <input type="password" placeholder="Contraseña" required className='FormLogin'/>
+          </div>
+          <a href="/passwordForget" className="Forget">¿Olvidaste tu contraseña?</a>
+          <button type="submit" className='btn-login' onClick={onLogin}>Iniciar Sesión</button>
+        </form>
         </div>
-         <div className='login-btn-container'>
-          <p className='input-label'>Contraseña<span style={{color:"red"}}>*</span></p>
-          <input type="password" placeholder="Contraseña" required className='FormLogin'/>
-        </div>
-        <a href="/passwordForget" className="Forget">¿Olvidaste tu contraseña?</a>
-        <button type="submit" className='btn-login'>Iniciar Sesión</button>
-      </div>
     </div>
   );
 }
@@ -143,7 +148,7 @@ function Home() {
 
   const [number, setNumber] = useState(0);
   const [notifications, setNotifications] = useState([]);
-  const [productos, setproducto] = useState([]);
+  const [productos, setProducto] = useState([]);
 
   const handleAddToCart = () => {
     setNumber(prevNumber => prevNumber + 1);
@@ -158,11 +163,21 @@ function Home() {
   };
 
   useEffect(() => {
+      fetch("http://localhost:8080/api/productos")
+        .then(res => res.json())
+        .then(data => setProducto(data));
+    }, []);
+
+  // Fetch con Node.js
+  /*
+  useEffect(() => {
     fetch('http://localhost:3001/api/datos')
       .then(response => response.json())
       .then(data => {console.log(data);setproducto(data)})
       .catch(error => {console.error('Error fetching data:', error)});
   }, []);
+  */
+
 
   return (
     <div className="App">
@@ -202,7 +217,6 @@ function Home() {
         &nbsp;
         <div className='middle-img'></div>
         <div className='products-container'>
-
 
           {productos.length > 0 ? (
             productos.map(producto => (
