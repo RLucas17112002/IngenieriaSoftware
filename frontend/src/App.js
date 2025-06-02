@@ -2,6 +2,12 @@ import logo from './logo2.png';
 import estambre from './estambre_imagen.jpg';
 import './App.css';
 import { useEffect, useRef, useState } from 'react';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate
+} from 'react-router-dom';
 
 
 /*function SearchBar() {
@@ -96,6 +102,44 @@ function PrecioFilter() {
 */
 
 function App() {
+  const isLoggedIn = false; // Aquí podrías poner la lógica real de autenticación
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route 
+          path="/" 
+          element={isLoggedIn ? <Home /> : <Navigate to="/login" replace />} 
+        />
+      </Routes>
+    </Router>
+  );
+}
+
+function Login() {
+  
+  return (
+    <div className="login">
+      <div className="login-container">
+        <p className='InicioTxt'>Iniciar Sesión</p>
+        <p>¿No tienes una cuenta? <a href="/register" style={{color: "black"}}>Regístrate aquí</a></p>
+        <div className='login-btn-container'>
+          <p className='input-label'>Usuario<span style={{color:"red"}}>*</span></p>
+          <input type="text" placeholder="Usuario" required className='FormLogin'/>
+        </div>
+         <div className='login-btn-container'>
+          <p className='input-label'>Contraseña<span style={{color:"red"}}>*</span></p>
+          <input type="password" placeholder="Contraseña" required className='FormLogin'/>
+        </div>
+        <a href="/passwordForget" className="Forget">¿Olvidaste tu contraseña?</a>
+        <button type="submit" className='btn-login'>Iniciar Sesión</button>
+      </div>
+    </div>
+  );
+}
+
+function Home() {
 
   const [number, setNumber] = useState(0);
   const [notifications, setNotifications] = useState([]);
@@ -133,9 +177,9 @@ function App() {
       <nav>
         <div className="Header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h2>Home&nbsp;<i className='fas fa-home'></i></h2>
-          <h2>Productos&nbsp;<i className='fas fa-box'></i></h2>
-          <h2>Sobre Nosotros&nbsp;<i className='fas fa-globe'></i></h2>
+          <h2 className='HovScale'>Home&nbsp;<i className='fas fa-home'></i></h2>
+          <h2 className='HovScale'>Productos&nbsp;<i className='fas fa-box'></i></h2>
+          <h2 className='HovScale'>Sobre Nosotros&nbsp;<i className='fas fa-globe'></i></h2>
           <div className='search'>
             <input className='search' placeholder='Busca uin producto...'></input>
             <button className='btn-search'><i className='fas fa-search'></i></button>
