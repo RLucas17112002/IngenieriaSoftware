@@ -1,0 +1,390 @@
+nav{
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  right: 0;
+  transition: all 0.3s ease-in-out;
+}
+
+nav .Header{
+  position: relative;
+  background-color: #f4eee2;
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 10px;
+  transition: all 0.3s ease-in-out;
+  height: 65px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.App-logo {
+  margin-left: 10px;
+  height: stretch;
+  cursor: pointer;
+  
+}
+
+.App-logo:hover {
+  transform: scale(1.1);
+}
+
+.search {
+  position: relative;
+  height: 30px;
+  width: 300px;
+  border-radius: 10px;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.search input {
+  background-color: white;
+  font-size: 18px;
+  padding: 5px;
+  padding-left: 10px;
+  padding-right: 0;
+  border-radius: 10px;
+  transition: width 1.1s ease;
+}
+
+.btn-search {
+  background-color: white;
+  border: 0;
+  cursor: pointer;
+  position: absolute;
+  top: 7px;
+  right: 0;
+  font-size: 20px;
+  height: 30px;
+  width: 50px;
+  transition: transform 1s ease;
+  border-radius: 10px;
+  rotate: 360deg;
+}
+
+.btn-search:hover {
+  transform: scale(1.2);
+}
+
+.users {
+  display: flex;
+  position: relative;
+  margin-top: 8px;
+  margin-left: 10px;
+  color: white;
+  align-items: center;
+}
+
+.user-foto {
+  position: relative;
+  height: stretch;
+  font-size: 45px;
+  cursor: pointer;
+  color: black;
+}
+
+.user-foto:hover{
+  animation: escalar 2s linear infinite;
+}
+
+.user-info{
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+  font-size: 15px;
+  justify-content: center;
+  color: black;
+}
+
+.user-info p{
+  margin-top: 5px;
+  margin-bottom: 1px;
+}
+
+.cart {
+  position: relative;
+  padding: 0 30px;
+  height: stretch;
+  font-size: 40px;
+  cursor: pointer;
+  padding-top: 10px;
+  color: black;
+}
+
+.small{
+  position: absolute;
+  top: 0;
+  right: 20px;
+  height: stretch;
+  font-size: 20px;
+  cursor: pointer;
+  color: red;
+}
+
+.noti{
+  position: absolute;
+  top: -10%;
+  right: 25%;
+  height: stretch;
+  font-size: 10px;
+  cursor: pointer;
+  color: white;
+}
+
+.cart:hover {
+  transition: scale(1.2);
+}
+
+.btn:focus, .input:focus {
+  outline: none;
+}
+
+.search.active .input {
+  width: 1000px;
+}
+
+.search.active .btn {
+  transform: translateX(198px);
+}
+
+.body-container{
+  height: stretch;
+  padding-top: 80px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.middle-img {
+  background-image: url('./images.jpeg');
+  background-position: center;
+  background-size: contain; /* Asegura que la imagen no se deforme ni pierda calidad */
+  height: 400px;
+  width: 100%;
+  object-fit: contain; /* No afecta a background, pero puedes dejarlo si usas <img> en vez de fondo */
+}
+
+.pro{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  color: black;
+}
+
+.products-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: space-between;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 1300px;
+  padding-right: 15%;
+  height: 100%;
+}
+
+.product-card {
+  width: 10%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: space-between;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+.product{
+  background-color: #eee;
+  border-radius: 10px;
+  box-shadow: 0 3px 15px rgba(100, 100, 100, 0.5);
+  margin: 10px;
+  padding: 20px;
+  text-align: center;
+  width: 250px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  transition: all 0.3s ease-in-out;
+}
+
+.product-card-img {
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 10%;
+  height: 150px;
+  text-align: center;
+  width: auto;
+}
+
+.img-product {
+  height: stretch;
+  width: 70%;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.product-info p{
+  margin: 5px;
+}
+
+.product-info button {
+  margin-top: 10px;
+  border: 0;
+  background-color: #6e13b9;
+  padding: 10px;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-left: 15px;
+}
+
+.product-info button:hover {
+  transform: scale(1.1);
+}
+
+.side-filter{
+  position: fixed;
+  top: 80px;
+  right: 0;
+  height: 100%;
+  background: linear-gradient(to top, #6e13b9, #e966d3);
+  width: 220px;
+}
+
+.side-filter h3{
+  padding-bottom: 20px;
+  padding-left: 10%;
+  color: white;
+}
+
+.section-filter{
+  position: relative;
+  padding-left: 10%;
+  color: white;
+  z-index: 1;
+}
+
+.filt {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  height: 40px;
+  margin-bottom: 30px;
+}
+
+.category{
+  position: absolute;
+  top: -25%;
+  justify-content: center;
+  color: white;
+}
+
+.filt select{
+  position: absolute;
+  top: 20%;
+  left: 35%;
+  height: 25px;
+  width: 110px;
+  border: none;
+  border-radius: 10px;
+  background-color: white;
+  padding-left: 5px;
+}
+
+.filt select:focus{
+  border-radius: 10px;
+}
+
+.filt-btn{
+  display: flex;
+  justify-content: center;
+  
+}
+
+.filt-btn button{
+  border: 0;
+  background-color: aqua;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.filt-btn button:hover{
+  transform: scale(1.1);
+}
+
+.filt-btn:hover .ifilt{
+  animation: rot45 1s linear infinite;
+}
+
+.notifications{
+  position: fixed;
+  bottom: 10px;
+  right: 5px;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  gap: 10px;
+}
+
+.notificacion{
+  background-color: white;
+  color: rebeccapurple;
+  padding: 10px 15px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  10%, 90% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+}
+
+/*
+@keyframes girar {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}*/
+
+@keyframes rot45 {
+  0% {
+    transform:rotate(0);
+  }
+  50% {
+    transform: rotate(45deg);
+ }
+ 100% {
+  transform: rotate(0);
+}
+}
+
+@keyframes escalar {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
