@@ -139,6 +139,15 @@ function Login({ onLogin }) {
           <a href="/passwordForget" className="Forget">¿Olvidaste tu contraseña?</a>
           <button type="submit" className='btn-login' onClick={onLogin}>Iniciar Sesión</button>
         </form>
+        <div className='social-container'>
+          <p className='social-txt'>Inicia sesión con:</p>
+          <div className='social-btns'>
+            <button className='btn-social'><i className='fab fa-google' style={{color:'#EA4335'}}></i> Google</button>
+            <button className='btn-social'><i className='fab fa-facebook' style={{color:"blue"}}></i> Facebook</button>
+          </div>
+          {//<p>Al iniciar sesión, aceptas nuestros <a href="/terms" style={{color: "black"}}>Términos de Servicio</a> y <a href="/privacy" style={{color: "black"}}>Política de Privacidad</a>.</p>
+          }      
+        </div>
         </div>
     </div>
   );

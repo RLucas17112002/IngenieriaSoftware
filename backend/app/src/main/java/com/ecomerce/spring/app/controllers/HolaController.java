@@ -19,6 +19,9 @@ public class HolaController {
         return List.of(
             new Product(1L, "Estambre Azul", 120.0, "Distribuidora Estambres MX", "Estambre suave para tejido grueso"),
             new Product(2L, "Estambre Rosa", 110.0, "Tejidos del Norte", "Ideal para proyectos delicados"),
+            new Product(3L, "Estambre Multicolor", 135.5, "Estambres del Sur", "Colores combinados vibrantes"),
+            new Product(3L, "Estambre Multicolor", 135.5, "Estambres del Sur", "Colores combinados vibrantes"),
+            new Product(3L, "Estambre Multicolor", 135.5, "Estambres del Sur", "Colores combinados vibrantes"),
             new Product(3L, "Estambre Multicolor", 135.5, "Estambres del Sur", "Colores combinados vibrantes")
         );
     }
