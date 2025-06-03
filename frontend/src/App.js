@@ -1,12 +1,13 @@
 import logo from './logo2.png';
 import estambre from './estambre_imagen.jpg';
 import './App.css';
-import { useEffect, useRef, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate
+  Navigate,
+  useNavigate
 } from 'react-router-dom';
 
 
@@ -121,33 +122,83 @@ function App() {
 }
 
 function Login({ onLogin }) {
+  //const [usuario, setUsuario] = useState('');
+  const [correo, setCorreo] = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const [error, setError] = useState('');
+
+  const navigate = useNavigate(); // Estoy redirigiendo al usuario a la página de inicio después de iniciar sesión
   
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const response = await fetch('http://localhost:3001/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ correo, contrasena })
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        localStorage.setItem('correo', JSON.stringify(data));
+        navigate('/');
+      } else {
+        setError('Correo o contraseña incorrectos.');
+      }
+    } catch (err) {
+      setError('Error en la conexión con el servidor.');
+    }
+  };
+
   return (
     <div className="login">
       <div className="login-container">
         <p className='InicioTxt'>Iniciar Sesión</p>
         <p>¿No tienes una cuenta? <a href="/register" style={{color: "black"}}>Regístrate aquí</a></p>
-        <form style={{display: "flex", flexDirection: "column"}}>
+
+        {error && <p style={{color: "red"}}>{error}</p>}
+
+        <form onSubmit={handleLogin}>
           <div className='login-btn-container'>
-            <p className='input-label'>Usuario<span style={{color:"red"}}>*</span></p>
-            <input type="text" placeholder="Usuario" required className='FormLogin'/>
+            <p className='input-label'>Correo electrónico<span style={{color:"red"}}>*</span></p>
+            <input 
+              type="email" 
+              placeholder="Correo electrónico" 
+              value={correo} 
+              onChange={(e) => setCorreo(e.target.value)} 
+              className='FormLogin' 
+              required />
           </div>
+
           <div className='login-btn-container'>
             <p className='input-label'>Contraseña<span style={{color:"red"}}>*</span></p>
-            <input type="password" placeholder="Contraseña" required className='FormLogin'/>
+            <input 
+              type="password" 
+              placeholder="Contraseña" 
+              value={contrasena} 
+              onChange={(e) => setContrasena(e.target.value)}
+              className='FormLogin'
+              required
+            />
           </div>
+
           <a href="/passwordForget" className="Forget">¿Olvidaste tu contraseña?</a>
-          <button type="submit" className='btn-login' onClick={onLogin}>Iniciar Sesión</button>
+          <button type="submit" className='btn-login'>Iniciar Sesión</button>
         </form>
-        <div className='social-container'>
-          <p className='social-txt'>Inicia sesión con:</p>
-          <div className='social-btns'>
-            <button className='btn-social'><i className='fab fa-google' style={{color:'#EA4335'}}></i> Google</button>
-            <button className='btn-social'><i className='fab fa-facebook' style={{color:"blue"}}></i> Facebook</button>
-          </div>
+        {//<div className='social-container'>
+          //<p className='social-txt'>Inicia sesión con:</p>
+          //<div className='social-btns'>
+            //<button className='btn-social'><i className='fab fa-google' style={{color:'#EA4335'}}></i> Google</button>
+            //<button className='btn-social'><i className='fab fa-facebook' style={{color:"blue"}}></i> Facebook</button>
+          //</div>
           {//<p>Al iniciar sesión, aceptas nuestros <a href="/terms" style={{color: "black"}}>Términos de Servicio</a> y <a href="/privacy" style={{color: "black"}}>Política de Privacidad</a>.</p>
           }      
-        </div>
+        //</div>
+}
         </div>
     </div>
   );
