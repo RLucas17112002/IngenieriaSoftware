@@ -122,7 +122,7 @@ function PrecioFilter() {
 }*/
 
 
-function Login({onLogin}) {
+function Login() {
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [error, setError] = useState('');
@@ -140,7 +140,9 @@ function Login({onLogin}) {
 
       if (response.ok) {
         const data = await response.json();
+        console.log("Login exitoso", data);
         localStorage.setItem('correo', JSON.stringify(data));
+        console.log("Redirigiendo a la página de inicio...");
         navigate('/');
       } else {
         setError('Correo o contraseña incorrectos.');
@@ -184,7 +186,7 @@ function Login({onLogin}) {
           </div>
 
           <a href="/passwordForget" className="Forget">¿Olvidaste tu contraseña?</a>
-          <button type="submit" className='btn-login' onClick={onLogin}>Iniciar Sesión</button>
+          <button type="submit" className='btn-login'>Iniciar Sesión</button>
         </form>
       </div>
     </div>
@@ -203,21 +205,6 @@ function Inicio() {
   );
 }
 
-function App() {
-  const isLoggedIn = localStorage.getItem('correo') !== null;
-
-  return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/"
-          element={isLoggedIn ? <Inicio /> : <Navigate to="/login" replace />}
-        />
-      </Routes>
-    </Router>
-  );
-}
 
 
 /*function Login({ onLogin }) {
@@ -255,6 +242,7 @@ function App() {
 
 function Home() {
 
+  const usuario = JSON.parse(localStorage.getItem('correo'));
   const [number, setNumber] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [productos, setProducto] = useState([]);
@@ -311,9 +299,17 @@ function Home() {
           <div className='users'>
             <i className='fas fa-user user-foto'></i>
             <div className='user-info'>
-                <p>User12345</p>
+                <p>{usuario?.correo}</p>
                 <p>Saldo: $0</p>
                 <p className='pro'>EstamPro   <i className='fas fa-crown'></i></p>
+                <button 
+                  onClick={() => {
+                    localStorage.removeItem('correo');
+                    window.location.href = '/login';
+                  }}
+                  className='btn-logout'>
+                  Cerrar sesión
+                </button>
             </div>
 
             <i className='fas fa-cart-shopping cart'><i className='fas fa-circle small'><p className='noti'>{number}</p></i></i>
@@ -407,6 +403,36 @@ function Home() {
   );
 }
 
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem('correo') !== null
+  );
+
+  useEffect(() => {
+    const checkLogin = () => {
+      setIsLoggedIn(localStorage.getItem('correo') !== null);
+    };
+
+    window.addEventListener('storage', checkLogin); // si abren en otras pestañas
+    checkLogin();
+
+    return () => window.removeEventListener('storage', checkLogin);
+  }, []);
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/bienvenida" element={<Inicio />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={isLoggedIn ? <Home /> : <Navigate to="/login" replace />}
+        />
+        <Route path="/" element={<Inicio />} />
+      </Routes>
+    </Router>
+  );
+}
 
 
 export default App;
