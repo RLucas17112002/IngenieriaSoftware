@@ -332,7 +332,6 @@ function Home() {
             <div className='user-info'>
                 <p>{usuario?.correo}</p>
                 <p>Saldo: $0</p>
-                <p className='pro'>EstamPro   <i className='fas fa-crown'></i></p>
                 <button 
                   onClick={() => {
                     localStorage.removeItem('correo');
