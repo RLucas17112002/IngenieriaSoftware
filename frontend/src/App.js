@@ -6,7 +6,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  Navigate
+  Navigate, useNavigate
 } from 'react-router-dom';
 
 
@@ -115,6 +115,7 @@ function App() {
           path="/" 
           element={isLoggedIn ? <Home /> : <Navigate to="/login" replace />} 
         />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </Router>
   );
@@ -149,6 +150,96 @@ function Login({ onLogin }) {
           }      
         </div>
         </div>
+    </div>
+  );
+}
+
+function Register() {
+
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    usuario: '',
+    correo: '',
+    correoVerificacion: '',
+    password: '',
+    telefono: '',
+    direccion: '',
+    numExt: '',
+    numInt: ''
+  });
+
+  const handleChange = (e) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Validación opcional
+    if (formData.correo !== formData.correoVerificacion) {
+      alert("Los correos no coinciden");
+      return;
+    }
+
+    try {
+      await fetch("http://localhost:8080/api/usuarios", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+
+      navigate("/login"); // Redirige a login después del registro
+    } catch (error) {
+      console.error("Error al registrar:", error);
+      alert("Hubo un problema con el registro.");
+      navigate("/login"); 
+    }
+  };
+
+  return (
+    <div className="register">
+      <div className="register-container">
+        <p className='InicioTxt'>Registrarse</p>
+        <form onSubmit={handleSubmit}>
+          <div className='register-info'>
+            <div className='register-btn-container'>
+              <p className='input-label'>Usuario<span style={{color:"red"}}>*</span></p>
+              <input name="usuario" type="text" placeholder="Usuario" required className='FormLogin' onChange={handleChange}/>
+            </div>
+            <div className='register-btn-container'>
+              <p className='input-label'>Correo electrónico<span style={{color:"red"}}>*</span></p>
+              <input name="correo" type="email" placeholder="Correo electrónico" required className='FormLogin' onChange={handleChange}/>
+            </div>
+            <div className='register-btn-container'>
+              <p className='input-label'>Verifica el Correo electrónico<span style={{color:"red"}}>*</span></p>
+              <input name="correoVerificacion" type="email" placeholder="Correo electrónico" required className='FormLogin' onChange={handleChange}/>
+            </div>
+            <div className='register-btn-container'>
+              <p className='input-label'>Contraseña<span style={{color:"red"}}>*</span></p>
+              <input name="contraseña" type="password" placeholder="Contraseña" required className='FormLogin' onChange={handleChange}/>
+            </div>
+            <div className='register-btn-container'>
+              <p className='input-label'>Número de teléfono<span style={{color:"red"}}>*</span></p>
+              <input name="telefono" type="tel" placeholder="Número de teléfono" required className='FormLogin' onChange={handleChange}/>
+            </div>
+            <div className='register-btn-container'>
+              <p className='input-label'>Dirección<span style={{color:"red"}}>*</span></p>
+              <input name="direccion" type="text" placeholder="Dirección" required className='FormLogin' onChange={handleChange}/>
+            </div>
+            <div className='register-btn-container'>
+              <p className='input-label'>Num. Exterior<span style={{color:"red"}}>*</span></p>
+              <input name="numExt" type="text" placeholder="# Ext." required className='FormLogin' onChange={handleChange}/>
+            </div>
+            <div className='register-btn-container'>
+              <p className='input-label'>Num. Interior</p>
+              <input name="numInt" type="text" placeholder="# Interior" className='FormLogin' onChange={handleChange}/>
+            </div>
+            <button type="submit" className='btn-login'>Registrarse</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
