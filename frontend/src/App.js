@@ -122,7 +122,7 @@ function PrecioFilter() {
 }*/
 
 
-function Login() {
+function Login({onLogin}) {
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [error, setError] = useState('');
@@ -184,7 +184,7 @@ function Login() {
           </div>
 
           <a href="/passwordForget" className="Forget">¿Olvidaste tu contraseña?</a>
-          <button type="submit" className='btn-login'>Iniciar Sesión</button>
+          <button type="submit" className='btn-login' onClick={onLogin}>Iniciar Sesión</button>
         </form>
       </div>
     </div>
