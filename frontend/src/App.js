@@ -121,7 +121,7 @@ function App() {
   );
 }
 
-function Login({ onLogin }) {
+function Login() {
   //const [usuario, setUsuario] = useState('');
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
@@ -131,7 +131,6 @@ function Login({ onLogin }) {
   
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
 
     try {
       const response = await fetch('http://localhost:3001/api/login', {
@@ -152,7 +151,7 @@ function Login({ onLogin }) {
     } catch (err) {
       setError('Error en la conexión con el servidor.');
     }
-  };
+    };
 
   return (
     <div className="login">
