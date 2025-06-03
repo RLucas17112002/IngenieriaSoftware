@@ -102,18 +102,30 @@ function PrecioFilter() {
 */
 
 function App() {
-  const [isLoggedIn, setIsLogedIn] = useState(false); 
-  const handleLogin = () => {
-    setIsLogedIn(true);
-  };
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem('correo') !== null
+  );
+
+  useEffect(() => {
+    const checkLogin = () => {
+      setIsLoggedIn(localStorage.getItem('correo') !== null);
+    };
+
+    window.addEventListener('storage', checkLogin); // si abren en otras pestañas
+    checkLogin();
+
+    return () => window.removeEventListener('storage', checkLogin);
+  }, []);
 
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={isLoggedIn ? <Navigate to="/" replace /> : <Login onLogin={handleLogin} />} />
-        <Route 
-          path="/" 
-          element={isLoggedIn ? <Home /> : <Navigate to="/login" replace />} 
+        <Route path="/" element={<Home />} />
+        <Route path="/bienvenida" element={<Inicio />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={isLoggedIn ? <Home /> : <Navigate to="/login" replace />}
         />
         <Route path="/register" element={<Register />} />
       </Routes>
@@ -122,34 +134,72 @@ function App() {
 }
 
 function Login({ onLogin }) {
-  
+  const [correo, setCorreo] = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('http://localhost:3001/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ correo, contrasena }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Login exitoso", data);
+        localStorage.setItem('correo', JSON.stringify(data));
+        console.log("Redirigiendo a la página de inicio...");
+        navigate('/');
+      } else {
+        setError('Correo o contraseña incorrectos.');
+      }
+    } catch (err) {
+      setError('Error en la conexión con el servidor.');
+    }
+  };
+
   return (
     <div className="login">
       <div className="login-container">
-        <p className='InicioTxt'>Iniciar Sesión</p>
-        <p>¿No tienes una cuenta? <a href="/register" style={{color: "black"}}>Regístrate aquí</a></p>
-        <form style={{display: "flex", flexDirection: "column"}}>
+        <p className="InicioTxt" onClick={onLogin}>Iniciar Sesión</p>
+        <p>¿No tienes una cuenta? <a href="/register" style={{ color: "black" }}>Regístrate aquí</a></p>
+
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+
+        <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column" }}>
           <div className='login-btn-container'>
-            <p className='input-label'>Usuario<span style={{color:"red"}}>*</span></p>
-            <input type="text" placeholder="Usuario" required className='FormLogin'/>
+            <p className='input-label'>Correo electrónico<span style={{ color: "red" }}>*</span></p>
+            <input
+              type="email"
+              placeholder="Correo"
+              required
+              className='FormLogin'
+              value={correo}
+              onChange={(e) => setCorreo(e.target.value)}
+            />
           </div>
+
           <div className='login-btn-container'>
-            <p className='input-label'>Contraseña<span style={{color:"red"}}>*</span></p>
-            <input type="password" placeholder="Contraseña" required className='FormLogin'/>
+            <p className='input-label'>Contraseña<span style={{ color: "red" }}>*</span></p>
+            <input
+              type="password"
+              placeholder="Contraseña"
+              required
+              className='FormLogin'
+              value={contrasena}
+              onChange={(e) => setContrasena(e.target.value)}
+            />
           </div>
+
           <a href="/passwordForget" className="Forget">¿Olvidaste tu contraseña?</a>
-          <button type="submit" className='btn-login' onClick={onLogin}>Iniciar Sesión</button>
+          <button type="submit" className='btn-login'>Iniciar Sesión</button>
         </form>
-        <div className='social-container'>
-          <p className='social-txt'>Inicia sesión con:</p>
-          <div className='social-btns'>
-            <button className='btn-social'><i className='fab fa-google' style={{color:'#EA4335'}}></i> Google</button>
-            <button className='btn-social'><i className='fab fa-facebook' style={{color:"blue"}}></i> Facebook</button>
-          </div>
-          {//<p>Al iniciar sesión, aceptas nuestros <a href="/terms" style={{color: "black"}}>Términos de Servicio</a> y <a href="/privacy" style={{color: "black"}}>Política de Privacidad</a>.</p>
-          }      
-        </div>
-        </div>
+      </div>
     </div>
   );
 }
@@ -296,15 +346,22 @@ function Home() {
           <h2 className='HovScale'>Productos&nbsp;<i className='fas fa-box'></i></h2>
           <h2 className='HovScale'>Sobre Nosotros&nbsp;<i className='fas fa-globe'></i></h2>
           <div className='search'>
-            <input className='search' placeholder='Busca uin producto...'></input>
+            <input className='search' placeholder='Busca un producto...'></input>
             <button className='btn-search'><i className='fas fa-search'></i></button>
           </div>
           <div className='users'>
             <i className='fas fa-user user-foto'></i>
             <div className='user-info'>
-                <p>User12345</p>
+                <p>{usuario?.correo}</p>
                 <p>Saldo: $0</p>
-                <p className='pro'>EstamPro   <i className='fas fa-crown'></i></p>
+                <button 
+                  onClick={() => {
+                    localStorage.removeItem('correo');
+                    window.location.href = '/login';
+                  }}
+                  className='btn-logout'>
+                  Cerrar sesión
+                </button>
             </div>
 
             <i className='fas fa-cart-shopping cart'><i className='fas fa-circle small'><p className='noti'>{number}</p></i></i>
