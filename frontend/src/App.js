@@ -103,26 +103,39 @@ function PrecioFilter() {
 
 function App() {
   const [isLoggedIn, setIsLogedIn] = useState(false); 
+
   const handleLogin = () => {
     setIsLogedIn(true);
   };
 
+  const handleLogout = () => {
+    setIsLogedIn(false);
+  };
+
+
+
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={isLoggedIn ? <Navigate to="/" replace /> : <Login onLogin={handleLogin} />} />
+        <Route path="/login" element={isLoggedIn ? <Navigate to="/Home" replace /> : <Login onLogin={handleLogin} />} />
         <Route 
           path="/" 
           element={isLoggedIn ? <Home /> : <Navigate to="/login" replace />} 
         />
         <Route path="/register" element={<Register />} />
+        <Route path="/cart" element={<ShopCart/>}/>
+        <Route path="/Home" element={isLoggedIn ? <Home onLogout={handleLogout} /> : <Navigate to="/login" replace />} />
+        <Route path="/" element={isLoggedIn ? <Home onLogout={handleLogout} /> : <Navigate to="/login" replace />} />
+        <Route path="/cart" element={isLoggedIn ? <ShopCart onLogout={handleLogout} /> : <Navigate to="/login" replace />} />
+        <Route path="/" element={isLoggedIn ? <ShopCart onLogout={handleLogout} /> : <Navigate to="/login" replace />} />
+
+        
       </Routes>
     </Router>
   );
 }
 
 function Login({ onLogin }) {
-  
   return (
     <div className="login">
       <div className="login-container">
@@ -147,15 +160,137 @@ function Login({ onLogin }) {
             <button className='btn-social'><i className='fab fa-facebook' style={{color:"blue"}}></i> Facebook</button>
           </div>
           {//<p>Al iniciar sesión, aceptas nuestros <a href="/terms" style={{color: "black"}}>Términos de Servicio</a> y <a href="/privacy" style={{color: "black"}}>Política de Privacidad</a>.</p>
-          }      
+          }
         </div>
         </div>
     </div>
   );
 }
 
-function Register() {
+function ShopCart({ onLogout }) {
+  const [productos, setProducto] = useState([]);
+  const [total, setTotal] = useState(0);
+  const navigate = useNavigate();
 
+  const handleLog = () => {
+    onLogout();           // Cambia isLoggedIn a false
+    navigate("/login");   // Redirige al login
+  };
+
+  const handleBack = () => {
+    navigate("/Home");
+  };
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/cart")
+      .then(res => res.json())
+      .then(data => {
+        const productosConCantidad = data.map(p => ({ ...p, cantidad: 1 }));
+        setProducto(productosConCantidad);
+      });
+  }, []);
+
+  useEffect(() => {
+    const nuevoTotal = productos.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+    setTotal(nuevoTotal);
+  }, [productos]);
+
+  const incrementarCantidad = (id) => {
+    const nuevosProductos = productos.map(p => {
+      if (p.id === id) return { ...p, cantidad: p.cantidad + 1 };
+      return p;
+    });
+    setProducto(nuevosProductos);
+  };
+
+  const decrementarCantidad = (id) => {
+    const nuevosProductos = productos
+      .map(p => {
+        if (p.id === id) return { ...p, cantidad: p.cantidad - 1 };
+        return p;
+      })
+      .filter(p => p.cantidad > 0);
+    setProducto(nuevosProductos);
+  };
+
+  return (
+    <div className="shop-cart">
+      <nav>
+        <div className="Header">
+          <img src={logo} className="App-logo" alt="logo" onClick={handleBack}/>
+          <h2 onClick={handleBack} className='HovScale'>Home&nbsp;<i className='fas fa-home'></i></h2>
+          <h2 className='HovScale'>Productos&nbsp;<i className='fas fa-box'></i></h2>
+          <h2 className='HovScale'>Sobre Nosotros&nbsp;<i className='fas fa-globe'></i></h2>
+          <div className='search'>
+            <input className='search' placeholder='Busca un producto...'></input>
+            <button className='btn-search'><i className='fas fa-search'></i></button>
+          </div>
+          <div className='users'>
+            <i className='fas fa-user user-foto'></i>
+            <div className='user-info'>
+              <p>User12345</p>
+              <p className='pro'>EstamPro <i style={{ color: "orange", marginRight: "20px" }} className='fas fa-crown'></i></p>
+              <p onClick={ handleLog } className='out'>Cerrar Sesión <i className='fas fa-right-from-bracket'></i></p>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div className='cart-space'>
+        <div className='cart-product-container'>
+          <p style={{ padding: "10px", paddingLeft: "20px" }}>Carrito de Compras</p>
+          <div className='cart-container'>
+            {productos.length === 0 ? (
+              <p style={{ padding: "20px" }}>Tu carrito está vacío.</p>
+            ) : (
+              productos.map(producto => (
+                <div key={producto.id} className='item-cart'>
+                  <img src={producto.imagen || estambre} alt={producto.nombre} className='img-cart' />
+                  <p style={{width:"200px"}}>{producto.nombre}</p>
+                  <p>${producto.precio}</p>
+                  <div className='add-quit'>
+                    <i className='fas fa-add btn-i' onClick={() => incrementarCantidad(producto.id)}></i>
+                    <p>{producto.cantidad}</p>
+                    <i className='fas fa-minus btn-i' onClick={() => decrementarCantidad(producto.id)}></i>
+                  </div>
+                  <p className="total">${producto.precio * producto.cantidad}</p>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className='pagos-container'>
+          <h1>Método de pago</h1>
+          <div className='pagos'>
+            <h2 style={{ padding: "20px" }}>Total del carrito: ${total}</h2>
+            <div className='img-pagos'>
+              <img src="https://d2r9epyceweg5n.cloudfront.net/apps/2362-es_MX-small-2362-pt_BR-small-PP_logo_6_01.jpg" alt="PayPal" className='img-pay' />
+              <img src="https://www.plazacaracol.mx/uploads/business/bbva-bancomer-image_banner.jpg" alt="PayPal" className='img-bbva' />
+              <img src="https://d31dn7nfpuwjnm.cloudfront.net/images/valoraciones/0023/4322/HSBC.png?1461915343g" alt="PayPal" className='img-bbva' />
+            </div>
+            <div className='pago-info'>
+              <form>
+                <h4 className='input-label'>Nombre del titular de la tarjeta<span style={{fontSize:"20px",color:"red"}}>*</span></h4>
+                <input type="text" placeholder="Nombre del titular" style={{marginBottom:"10px"}} className='FormLogin' required />
+                <h4 className='input-label'>Número de tarjeta<span style={{fontSize:"20px",color:"red"}}>*</span></h4>
+                <input type="text" placeholder="Número de tarjeta" style={{marginBottom:"10px"}} className='FormLogin' required />
+                <h4 className='input-label'>Fecha de vencimiento<span style={{fontSize:"20px",color:"red"}}>*</span></h4>
+                <input type="text" placeholder="MM/AA" style={{marginBottom:"10px"}} className='FormLogin' required />
+                <h4 className='input-label'>Código de seguridad<span style={{fontSize:"20px",color:"red"}}>*</span></h4>
+                <input type="text" placeholder="Código de seguridad" className='FormLogin' required />
+                <button type="submit" className='btn-pagar' style={{ marginTop: "20px" }}>Pagar</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+function Register() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     usuario: '',
@@ -206,35 +341,19 @@ function Register() {
           <div className='register-info'>
             <div className='register-btn-container'>
               <p className='input-label'>Usuario<span style={{color:"red"}}>*</span></p>
-              <input name="usuario" type="text" placeholder="Usuario" required className='FormLogin' onChange={handleChange}/>
+              <input name="nombre_completo" type="text" placeholder="Usuario" required className='FormLogin' onChange={handleChange}/>
             </div>
             <div className='register-btn-container'>
               <p className='input-label'>Correo electrónico<span style={{color:"red"}}>*</span></p>
-              <input name="correo" type="email" placeholder="Correo electrónico" required className='FormLogin' onChange={handleChange}/>
-            </div>
-            <div className='register-btn-container'>
-              <p className='input-label'>Verifica el Correo electrónico<span style={{color:"red"}}>*</span></p>
-              <input name="correoVerificacion" type="email" placeholder="Correo electrónico" required className='FormLogin' onChange={handleChange}/>
+              <input name="email" type="email" placeholder="Correo electrónico" required className='FormLogin' onChange={handleChange}/>
             </div>
             <div className='register-btn-container'>
               <p className='input-label'>Contraseña<span style={{color:"red"}}>*</span></p>
-              <input name="contraseña" type="password" placeholder="Contraseña" required className='FormLogin' onChange={handleChange}/>
+              <input name="contrasena" type="password" placeholder="Contraseña" required className='FormLogin' onChange={handleChange}/>
             </div>
             <div className='register-btn-container'>
               <p className='input-label'>Número de teléfono<span style={{color:"red"}}>*</span></p>
               <input name="telefono" type="tel" placeholder="Número de teléfono" required className='FormLogin' onChange={handleChange}/>
-            </div>
-            <div className='register-btn-container'>
-              <p className='input-label'>Dirección<span style={{color:"red"}}>*</span></p>
-              <input name="direccion" type="text" placeholder="Dirección" required className='FormLogin' onChange={handleChange}/>
-            </div>
-            <div className='register-btn-container'>
-              <p className='input-label'>Num. Exterior<span style={{color:"red"}}>*</span></p>
-              <input name="numExt" type="text" placeholder="# Ext." required className='FormLogin' onChange={handleChange}/>
-            </div>
-            <div className='register-btn-container'>
-              <p className='input-label'>Num. Interior</p>
-              <input name="numInt" type="text" placeholder="# Interior" className='FormLogin' onChange={handleChange}/>
             </div>
             <button type="submit" className='btn-login'>Registrarse</button>
           </div>
@@ -244,11 +363,21 @@ function Register() {
   );
 }
 
-function Home() {
+function Home( { onLogout } ) {
 
   const [number, setNumber] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [productos, setProducto] = useState([]);
+  const navigate = useNavigate();
+
+  const handleCart = () => {
+    navigate("/cart");
+  };
+
+  const handleLog = () => {
+    onLogout();           // Cambia isLoggedIn a false
+    navigate("/login");   // Redirige al login
+  };
 
   const handleAddToCart = () => {
     setNumber(prevNumber => prevNumber + 1);
@@ -303,11 +432,11 @@ function Home() {
             <i className='fas fa-user user-foto'></i>
             <div className='user-info'>
                 <p>User12345</p>
-                <p>Saldo: $0</p>
-                <p className='pro'>EstamPro   <i className='fas fa-crown'></i></p>
+                <p className='pro'>EstamPro <i style={{ color: "orange", marginRight: "20px" }} className='fas fa-crown'></i></p>
+                <p onClick={handleLog} className='out'>Cerrar Sesión <i className='fas fa-right-from-bracket'></i></p>
             </div>
 
-            <i className='fas fa-cart-shopping cart'><i className='fas fa-circle small'><p className='noti'>{number}</p></i></i>
+            <i className='fas fa-cart-shopping cart' onClick={handleCart}><i className='fas fa-circle small'><p className='noti'>{number}</p></i></i>
           </div>
         </div>
       </nav>
@@ -330,7 +459,7 @@ function Home() {
                   <p>Distribuidor: {producto.distribuidor} </p>
                   <p>{producto.descripcion}</p>
                   <button>Mas info</button>
-                <button onClick={handleAddToCart}>Agregar al carrito</button>
+                  <button onClick={handleAddToCart}>Agregar al carrito</button>
                 </div>
               </div>
               ))
@@ -351,11 +480,10 @@ function Home() {
               <button onClick={handleAddToCart}>Agregar al carrito</button>
             </div>
           </div>*/}
-
-
         </div>
 
-{/*
+{
+/*
         <div className='side-filter'>
           <h3>Agregue un filtro <i className='fas fa-filter'></i></h3>
 
@@ -385,7 +513,8 @@ function Home() {
             </div>
 
           </div>
-        </div>*/
+        </div>
+*/
 }
 
       </div>  
