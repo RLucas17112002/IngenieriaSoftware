@@ -18,6 +18,18 @@ app.get('/api/datos', (req, res) => {
   ]);
 });
 
+app.use(express.json());
+
+app.post('/api/login', (req, res) => {
+  const { correo, contrasena } = req.body;
+
+  // Aquí se deberían validar las credenciales del usuario
+  if (correo === 'usuario@example.com' && contrasena === 'password') {
+    res.json({ mensaje: 'Inicio de sesión exitoso', correo });
+  } else {
+    res.status(401).json({ mensaje: 'Credenciales inválidas' });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
