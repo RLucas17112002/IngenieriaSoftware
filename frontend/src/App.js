@@ -121,8 +121,39 @@ function PrecioFilter() {
   );
 }*/
 
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem('correo') !== null
+  );
 
-function Login() {
+  useEffect(() => {
+    const checkLogin = () => {
+      setIsLoggedIn(localStorage.getItem('correo') !== null);
+    };
+
+    window.addEventListener('storage', checkLogin); // si abren en otras pestañas
+    checkLogin();
+
+    return () => window.removeEventListener('storage', checkLogin);
+  }, []);
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/bienvenida" element={<Inicio />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={isLoggedIn ? <Home /> : <Navigate to="/login" replace />}
+        />
+      </Routes>
+    </Router>
+  );
+}
+
+
+function Login({ onLogin }) {
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [error, setError] = useState('');
@@ -155,7 +186,7 @@ function Login() {
   return (
     <div className="login">
       <div className="login-container">
-        <p className="InicioTxt">Iniciar Sesión</p>
+        <p className="InicioTxt" onClick={onLogin}>Iniciar Sesión</p>
         <p>¿No tienes una cuenta? <a href="/register" style={{ color: "black" }}>Regístrate aquí</a></p>
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -293,7 +324,7 @@ function Home() {
           <h2 className='HovScale'>Productos&nbsp;<i className='fas fa-box'></i></h2>
           <h2 className='HovScale'>Sobre Nosotros&nbsp;<i className='fas fa-globe'></i></h2>
           <div className='search'>
-            <input className='search' placeholder='Busca uin producto...'></input>
+            <input className='search' placeholder='Busca un producto...'></input>
             <button className='btn-search'><i className='fas fa-search'></i></button>
           </div>
           <div className='users'>
@@ -403,36 +434,7 @@ function Home() {
   );
 }
 
-function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem('correo') !== null
-  );
 
-  useEffect(() => {
-    const checkLogin = () => {
-      setIsLoggedIn(localStorage.getItem('correo') !== null);
-    };
-
-    window.addEventListener('storage', checkLogin); // si abren en otras pestañas
-    checkLogin();
-
-    return () => window.removeEventListener('storage', checkLogin);
-  }, []);
-
-  return (
-    <Router>
-      <Routes>
-        <Route path="/bienvenida" element={<Inicio />} />
-        <Route path="/login" element={<Login />} />
-        <Route
-          path="/"
-          element={isLoggedIn ? <Home /> : <Navigate to="/login" replace />}
-        />
-        <Route path="/" element={<Inicio />} />
-      </Routes>
-    </Router>
-  );
-}
 
 
 export default App;

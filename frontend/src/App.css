@@ -75,6 +75,23 @@
   transition: all 0.3s ease-in-out;
 }
 
+.btn-logout{
+  background-color: #50999c;
+  color: white;
+  border: none;
+  padding: 1px;
+  border-radius: 1px;
+  cursor: pointer;
+  font-size: 10px;
+  margin-top: 5px;
+}
+
+.btn-logout:hover {
+  background-color: #2b6b6d;
+  transform: scale(1.05);
+  transition: all 0.3s ease-in-out;
+}
+
 .social-container {
   display: flex;
   flex-direction: column;
