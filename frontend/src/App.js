@@ -135,37 +135,67 @@ function App() {
   );
 }
 
+
 function Login({ onLogin }) {
+  const [email, setEmail] = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('http://localhost:8080/api/usuarios/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, contrasena }),
+      });
+
+      const result = await response.text(); // tu backend devuelve texto plano
+
+      if (response.ok) {
+        if (onLogin) onLogin(); // puedes redirigir desde aquí
+      } else {
+        setError(result); // mensaje desde backend (Credenciales inválidas)
+      }
+    } catch (err) {
+      setError('Error en el servidor. Intenta más tarde.');
+    }
+  };
+
   return (
     <div className="login">
       <div className="login-container">
         <p className='InicioTxt'>Iniciar Sesión</p>
-        <p>¿No tienes una cuenta? <a href="/register" style={{color: "black"}}>Regístrate aquí</a></p>
-        <form style={{display: "flex", flexDirection: "column"}}>
+        <p>¿No tienes una cuenta? <a href="/register" style={{ color: "black" }}>Regístrate aquí</a></p>
+        <form style={{ display: "flex", flexDirection: "column" }} onSubmit={handleSubmit}>
           <div className='login-btn-container'>
-            <p className='input-label'>Usuario<span style={{color:"red"}}>*</span></p>
-            <input type="text" placeholder="Usuario" required className='FormLogin'/>
+            <p className='input-label'>Correo electrónico<span style={{ color: "red" }}>*</span></p>
+            <input type="email" placeholder="Correo electrónico" required className='FormLogin' value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className='login-btn-container'>
-            <p className='input-label'>Contraseña<span style={{color:"red"}}>*</span></p>
-            <input type="password" placeholder="Contraseña" required className='FormLogin'/>
+            <p className='input-label'>Contraseña<span style={{ color: "red" }}>*</span></p>
+            <input type="password" placeholder="Contraseña" required className='FormLogin' value={contrasena} onChange={(e) => setContrasena(e.target.value)} />
           </div>
           <a href="/passwordForget" className="Forget">¿Olvidaste tu contraseña?</a>
-          <button type="submit" className='btn-login' onClick={onLogin}>Iniciar Sesión</button>
+          <button type="submit" className='btn-login'>Iniciar Sesión</button>
         </form>
+        {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
+
         <div className='social-container'>
           <p className='social-txt'>Inicia sesión con:</p>
           <div className='social-btns'>
-            <button className='btn-social'><i className='fab fa-google' style={{color:'#EA4335'}}></i> Google</button>
-            <button className='btn-social'><i className='fab fa-facebook' style={{color:"blue"}}></i> Facebook</button>
+            <button className='btn-social'><i className='fab fa-google' style={{ color: '#EA4335' }}></i> Google</button>
+            <button className='btn-social'><i className='fab fa-facebook' style={{ color: "blue" }}></i> Facebook</button>
           </div>
-          {//<p>Al iniciar sesión, aceptas nuestros <a href="/terms" style={{color: "black"}}>Términos de Servicio</a> y <a href="/privacy" style={{color: "black"}}>Política de Privacidad</a>.</p>
-          }
         </div>
-        </div>
+      </div>
     </div>
   );
 }
+
 
 function ShopCart({ onLogout }) {
   const [productos, setProducto] = useState([]);
@@ -182,7 +212,7 @@ function ShopCart({ onLogout }) {
   };
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/cart")
+    fetch("http://localhost:8080/api/carrito")
       .then(res => res.json())
       .then(data => {
         const productosConCantidad = data.map(p => ({ ...p, cantidad: 1 }));
@@ -293,14 +323,13 @@ function ShopCart({ onLogout }) {
 function Register() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    usuario: '',
-    correo: '',
-    correoVerificacion: '',
-    password: '',
+    nombre_completo: '',
+    email: '',
+    confirmaEmail: '',
+    contrasena: '',
+    confirmarContrasena: '',
     telefono: '',
-    direccion: '',
-    numExt: '',
-    numInt: ''
+    estado: 'Activo',
   });
 
   const handleChange = (e) => {
@@ -310,20 +339,24 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validación opcional
-    if (formData.correo !== formData.correoVerificacion) {
-      alert("Los correos no coinciden");
+      if (formData.contrasena !== formData.confirmarContrasena) {
+      alert("Las contraseñas no coinciden");
       return;
     }
 
     try {
-      await fetch("http://localhost:8080/api/usuarios", {
+
+      const datosAEnviar = { ...formData};
+      delete datosAEnviar.confirmarContrasena; // Elimina el campo de confirmación de contraseña
+
+      await fetch("http://localhost:8080/api/usuarios/registro", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify(formData)
       });
+
 
       navigate("/login"); // Redirige a login después del registro
     } catch (error) {
@@ -340,8 +373,8 @@ function Register() {
         <form onSubmit={handleSubmit}>
           <div className='register-info'>
             <div className='register-btn-container'>
-              <p className='input-label'>Usuario<span style={{color:"red"}}>*</span></p>
-              <input name="nombre_completo" type="text" placeholder="Usuario" required className='FormLogin' onChange={handleChange}/>
+              <p className='input-label'>Nombre Completo<span style={{color:"red"}}>*</span></p>
+              <input name="nombre_completo" type="text" placeholder="Nombre Completo" required className='FormLogin' onChange={handleChange}/>
             </div>
             <div className='register-btn-container'>
               <p className='input-label'>Correo electrónico<span style={{color:"red"}}>*</span></p>
@@ -350,6 +383,10 @@ function Register() {
             <div className='register-btn-container'>
               <p className='input-label'>Contraseña<span style={{color:"red"}}>*</span></p>
               <input name="contrasena" type="password" placeholder="Contraseña" required className='FormLogin' onChange={handleChange}/>
+            </div>
+            <div className='register-btn-container'>
+              <p className='input-label'>Repite la Contraseña<span style={{color:"red"}}>*</span></p>
+              <input name="confirmarContrasena" type="password" placeholder="Repite la Contraseña" required className='FormLogin' onChange={handleChange}/>
             </div>
             <div className='register-btn-container'>
               <p className='input-label'>Número de teléfono<span style={{color:"red"}}>*</span></p>
@@ -451,7 +488,7 @@ function Home( { onLogout } ) {
             productos.map(producto => (
               <div key={producto.id_producto} className='product'>
                 <div className='product-card-img'>
-                  <img src={estambre} alt={producto.nombre} className='img-product'></img>
+                  <img src={producto.imagen_url} alt={producto.nombre} className='img-product'></img>
                 </div>
                 <div className='product-info'>
                   <h3>{producto.nombre}</h3>

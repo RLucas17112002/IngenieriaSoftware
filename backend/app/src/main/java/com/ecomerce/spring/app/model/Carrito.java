@@ -10,7 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-@Table(name = "Carrito")
+@Table(name = "carrito")
 public class Carrito {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,6 +18,7 @@ public class Carrito {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")
+    
     private Usuario usuario;
 
     private LocalDateTime fecha_creacion;

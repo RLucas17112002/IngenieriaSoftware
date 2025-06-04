@@ -3,7 +3,6 @@ package com.ecomerce.spring.app.service;
 import com.ecomerce.spring.app.model.Usuario;
 import com.ecomerce.spring.app.repository.UsuarioRepository;
 
-import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
