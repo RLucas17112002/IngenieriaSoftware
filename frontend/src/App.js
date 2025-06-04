@@ -239,23 +239,34 @@ function ShopCart({ onLogout }) {
     setTotal(nuevoTotal);
   }, [productos]);
 
-  const incrementarCantidad = (id) => {
-    const nuevosProductos = productos.map(p => {
-      if (p.id === id) return { ...p, cantidad: p.cantidad + 1 };
-      return p;
-    });
-    setProductos(nuevosProductos);
-  };
+  const actualizarCantidad = (id, nuevaCantidad) => {
+  if (nuevaCantidad < 1) return;
 
-  const decrementarCantidad = (id) => {
-    const nuevosProductos = productos
-      .map(p => {
-        if (p.id === id) return { ...p, cantidad: p.cantidad - 1 };
-        return p;
-      })
-      .filter(p => p.cantidad > 0);
-    setProductos(nuevosProductos);
-  };
+  fetch(`http://localhost:8080/api/carrito_productos/${id}?cantidad=${nuevaCantidad}`, {
+    method: "PUT",
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Error actualizando cantidad");
+      return res.json();
+    })
+    .then(updatedProducto => {
+      // Usa p.id, no p.id_carrito_producto
+      setProductos(prevProductos =>
+        prevProductos.map(p =>
+          p.id === id ? { ...p, cantidad: updatedProducto.cantidad } : p
+        )
+      );
+    })
+    .catch(err => console.error(err));
+};
+
+  const incrementarCantidad = (id, cantidadActual) => {
+  actualizarCantidad(id, cantidadActual + 1);
+};
+
+  const decrementarCantidad = (id, cantidadActual) => {
+  actualizarCantidad(id, cantidadActual - 1);
+};
 
   return (
     <div className="shop-cart">
@@ -293,9 +304,9 @@ function ShopCart({ onLogout }) {
                   <p style={{width:"200px"}}>{producto.nombre}</p>
                   <p>${producto.precio}</p>
                   <div className='add-quit'>
-                    <i className='fas fa-add btn-i' onClick={() => incrementarCantidad(producto.id)}></i>
+                    <i className='fas fa-add btn-i' onClick={() => incrementarCantidad(producto.id, producto.cantidad)}></i>
                     <p>{producto.cantidad}</p>
-                    <i className='fas fa-minus btn-i' onClick={() => decrementarCantidad(producto.id)}></i>
+                    <i className='fas fa-minus btn-i' onClick={() => decrementarCantidad(producto.id, producto.cantidad)}></i>
                   </div>
                   <p className="total">${producto.precio * producto.cantidad}</p>
                 </div>
