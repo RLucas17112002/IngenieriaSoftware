@@ -1,11 +1,7 @@
 package com.ecomerce.spring.app.model;
 
 import java.math.BigDecimal;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "producto")

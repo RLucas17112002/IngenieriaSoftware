@@ -197,14 +197,15 @@ function Login({ onLogin }) {
 }
 
 
+
 function ShopCart({ onLogout }) {
-  const [productos, setProducto] = useState([]);
+  const [productos, setProductos] = useState([]);
   const [total, setTotal] = useState(0);
   const navigate = useNavigate();
 
   const handleLog = () => {
-    onLogout();           // Cambia isLoggedIn a false
-    navigate("/login");   // Redirige al login
+    onLogout();
+    navigate("/login");
   };
 
   const handleBack = () => {
@@ -212,16 +213,29 @@ function ShopCart({ onLogout }) {
   };
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/carrito")
+    fetch("http://localhost:8080/api/carrito_productos")
       .then(res => res.json())
       .then(data => {
-        const productosConCantidad = data.map(p => ({ ...p, cantidad: 1 }));
-        setProducto(productosConCantidad);
+        // Mapeamos los productos para incluir cantidad y datos desde producto
+        const productosConCantidad = data.map(item => ({
+          id: item.producto.id_producto,
+          nombre: item.producto.nombre,
+          precio: parseFloat(item.producto.precio),
+          imagen: item.producto.imagen_url,
+          cantidad: item.cantidad
+        }));
+        setProductos(productosConCantidad);
+      })
+      .catch(error => {
+        console.error("Error al cargar productos del carrito:", error);
       });
   }, []);
 
   useEffect(() => {
-    const nuevoTotal = productos.reduce((acc, p) => acc + p.precio * p.cantidad, 0);
+    const nuevoTotal = productos.reduce(
+      (acc, p) => acc + p.precio * p.cantidad,
+      0
+    );
     setTotal(nuevoTotal);
   }, [productos]);
 
@@ -230,7 +244,7 @@ function ShopCart({ onLogout }) {
       if (p.id === id) return { ...p, cantidad: p.cantidad + 1 };
       return p;
     });
-    setProducto(nuevosProductos);
+    setProductos(nuevosProductos);
   };
 
   const decrementarCantidad = (id) => {
@@ -240,7 +254,7 @@ function ShopCart({ onLogout }) {
         return p;
       })
       .filter(p => p.cantidad > 0);
-    setProducto(nuevosProductos);
+    setProductos(nuevosProductos);
   };
 
   return (
