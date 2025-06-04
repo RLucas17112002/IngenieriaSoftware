@@ -449,14 +449,14 @@ function Home( { onLogout } ) {
 
           {productos.length > 0 ? (
             productos.map(producto => (
-              <div key={producto.id} className='product'>
+              <div key={producto.id_producto} className='product'>
                 <div className='product-card-img'>
                   <img src={estambre} alt={producto.nombre} className='img-product'></img>
                 </div>
                 <div className='product-info'>
                   <h3>{producto.nombre}</h3>
                   <p>Precio: {producto.precio} MXN$</p>
-                  <p>Distribuidor: {producto.distribuidor} </p>
+                  <p>Marca: {producto.marca} </p>
                   <p>{producto.descripcion}</p>
                   <button>Mas info</button>
                   <button onClick={handleAddToCart}>Agregar al carrito</button>
@@ -482,8 +482,7 @@ function Home( { onLogout } ) {
           </div>*/}
         </div>
 
-{
-/*
+{/*
         <div className='side-filter'>
           <h3>Agregue un filtro <i className='fas fa-filter'></i></h3>
 
@@ -514,8 +513,7 @@ function Home( { onLogout } ) {
 
           </div>
         </div>
-*/
-}
+*/}
 
       </div>  
 

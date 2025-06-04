@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS ecommerce;
-USE ecommerce;
+CREATE DATABASE IF NOT EXISTS ecomerce;
+USE ecomerce;
 
 -- Usuario
 CREATE TABLE Usuario (
