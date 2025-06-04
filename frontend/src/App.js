@@ -135,7 +135,7 @@ function App() {
   );
 }
 
-function Login({ onLogin }) {
+/*function Login({ onLogin }) {
   return (
     <div className="login">
       <div className="login-container">
@@ -163,6 +163,85 @@ function Login({ onLogin }) {
           }
         </div>
         </div>
+    </div>
+  );
+}*/
+
+function Login({ onLogin }) {
+  const [email, setEmail] = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('http://localhost:8080/api/usuarios/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, contrasena }),
+      });
+      const data = await response.text();
+      if (response.ok) {
+        //const data = await response.text();
+        console.log("Login exitoso", data);
+        localStorage.setItem('correo', JSON.stringify(data));
+        console.log("Redirigiendo a la página de inicio...");
+        onLogin();
+        navigate('/');
+      } else {
+        setError('Correo o contraseña incorrectos.');
+      }
+    } catch (err) {
+      setError('Error en la conexión con el servidor.');
+    }
+  };
+
+  return (
+    <div className="login">
+      <div className="login-container">
+        <p className="InicioTxt" onClick={onLogin}>Iniciar Sesión</p>
+        <p>¿No tienes una cuenta? <a href="/register" style={{ color: "black" }}>Regístrate aquí</a></p>
+
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+
+        <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column" }}>
+          <div className='login-btn-container'>
+            <p className='input-label'>Correo electrónico<span style={{ color: "red" }}>*</span></p>
+            <input
+              type="email"
+              placeholder="Correo"
+              required
+              className='FormLogin'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div className='login-btn-container'>
+            <p className='input-label'>Contraseña<span style={{ color: "red" }}>*</span></p>
+            <input
+              type="password"
+              placeholder="Contraseña"
+              required
+              className='FormLogin'
+              value={contrasena}
+              onChange={(e) => setContrasena(e.target.value)}
+            />
+          </div>
+
+          <a href="/passwordForget" className="Forget">¿Olvidaste tu contraseña?</a>
+          <button type="submit" className='btn-login'>Iniciar Sesión</button>
+        </form>
+        <div className='social-container'>
+          <p className='social-txt'>Inicia sesión con:</p>
+          <div className='social-btns'>
+            <button className='btn-social'><i className='fab fa-google' style={{color:'#EA4335'}}></i> Google</button>
+            <button className='btn-social'><i className='fab fa-facebook' style={{color:"blue"}}></i> Facebook</button>
+          </div>
+      </div>
+    </div>
     </div>
   );
 }
@@ -451,7 +530,7 @@ function Home( { onLogout } ) {
             productos.map(producto => (
               <div key={producto.id_producto} className='product'>
                 <div className='product-card-img'>
-                  <img src={estambre} alt={producto.nombre} className='img-product'></img>
+                  <img src={producto.imagen_url} alt={producto.nombre} className='img-product'></img>
                 </div>
                 <div className='product-info'>
                   <h3>{producto.nombre}</h3>

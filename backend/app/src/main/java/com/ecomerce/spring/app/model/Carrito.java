@@ -14,7 +14,7 @@ import jakarta.persistence.ManyToOne;
 public class Carrito {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id_carrito;
+    private Long id_carrito;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")
@@ -23,10 +23,10 @@ public class Carrito {
     private LocalDateTime fecha_creacion;
 
     // Getters y Setters
-    public int getId_carrito() {
+    public Long getId_carrito() {
         return id_carrito;
     }
-    public void setId_carrito(int id_carrito) {
+    public void setId_carrito(Long id_carrito) {
         this.id_carrito = id_carrito;
     }
 
